@@ -1,0 +1,53 @@
+---
+import { CardPlayButton } from "../../components/CardPlayButton";
+import MusicsTable from "../../components/MusicsTable.astro";
+import Layout from "../../layouts/Layout.astro";
+import { allPlaylists, songs } from "../../lib/data";
+
+const { id } = Astro.params || {};
+const playlist = allPlaylists.find((playlist) => playlist.id === id);
+const playListSongs = songs.filter(
+  (song) => song.albumId === playlist?.albumId
+);
+---
+
+<Layout title={playlist?.title || "Playlist"}>
+  <div
+    id="playlist-container"
+    class="relative flex flex-col h-full overflow-x-hidden duration-1000 bg-blend-lighten"
+  >
+    <header class="flex flex-row items-start gap-8 px-6">
+      <picture class="aspect-square w-52 h-52 flex-none pt-4">
+        <img src={playlist?.cover || "/default-cover.jpg"} />
+      </picture>
+      <div class="flex flex-col justify-between pt-4">
+        <h2 class="flex flex-1 items-end">Play this Music</h2>
+        <div>
+          <h1 class="title-clamp text-3xl font-bold block text-amber-200">
+            {playlist?.title || "Unknown Playlist"}
+            <span transition:name={`playlist ${playlist?.id}`}></span>
+          </h1>
+        </div>
+
+        <div class="flex-1 flex items-end">
+          <div class="text-sm text-gray-300 font-normal">
+            <div transition:name={`playlist ${playlist?.id}`}>
+              <span>{playlist?.artists.join(",")}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="pl-6 pt-6">
+      <CardPlayButton id={id} client:load />
+    </div>
+    <div class="relative z-10 px-6 pt-10">
+      <h1 class="text-4xl font-bold">Buenas noches</h1>
+      <div class="flex flex-wrap mt-6 gap-4"></div>
+    </div>
+
+    <section class="p-8">
+      <MusicsTable songs={playListSongs} />
+    </section>
+  </div>
+</Layout>
